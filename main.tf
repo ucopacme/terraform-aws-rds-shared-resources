@@ -5,16 +5,16 @@ resource "aws_kms_key" "cmk" {
   key_usage                = "ENCRYPT_DECRYPT"
   customer_master_key_spec = "SYMMETRIC_DEFAULT"
   multi_region             = var.cmk_multi_region
-  policy                   = data.aws_iam_policy_document.cmk_policy.json
+  policy                   = data.aws_iam_policy_document.cmk.json
   tags                     = var.tags
 }
 
-resource "aws_kms_alias" "cmk_alias" {
+resource "aws_kms_alias" "cmk" {
   name          = var.cmk_alias
   target_key_id = aws_kms_key.cmk.key_id
 }
 
-data "aws_iam_policy_document" "cmk_policy" {
+data "aws_iam_policy_document" "cmk" {
   statement {
     sid       = "Enable IAM User Permissions"
     effect    = "Allow"
@@ -70,7 +70,7 @@ data "aws_iam_policy_document" "cmk_policy" {
   }
 }
 
-module "sql_server_s3_backup_bucket" {
+module "sql_server_s3_backup" {
   count            = local.create_sql_server_s3_backup_bucket ? 1 : 0
   source           = "git::https://git@github.com/ucopacme/terraform-aws-s3-bucket.git"
   bucket           = var.sql_server_s3_backup_bucket_name
@@ -132,14 +132,14 @@ data "aws_iam_policy_document" "sql_server_s3_backup_bucket_policy" {
   }
 }
 
-resource "aws_iam_role" "rds-sql-server-s3-role" {
+resource "aws_iam_role" "sql_server_s3" {
   count              = local.create_sql_server_s3_role ? 1 : 0
-  name               = var.rds_sql_server_s3_role_name
+  name               = var.sql_server_s3_role_name
   description        = "Role for RDS SQL Server S3 backup/restore and point-in-time recovery"
-  assume_role_policy = data.aws_iam_policy_document.role-trust-policy.json
+  assume_role_policy = data.aws_iam_policy_document.sql_server_s3_trust.json
 }
 
-data "aws_iam_policy_document" "role-trust-policy" {
+data "aws_iam_policy_document" "sql_server_s3_trust" {
   statement {
     effect  = "Allow"
     actions = ["sts:AssumeRole"]
@@ -157,20 +157,20 @@ data "aws_iam_policy_document" "role-trust-policy" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "rds-sql-server-s3-policy-attach" {
+resource "aws_iam_role_policy_attachment" "sql_server_s3" {
   count      = local.create_sql_server_s3_role ? 1 : 0
-  role       = aws_iam_role.rds-sql-server-s3-role[0].name
-  policy_arn = aws_iam_policy.rds-sql-server-s3-policy[0].arn
+  role       = aws_iam_role.sql_server_s3[0].name
+  policy_arn = aws_iam_policy.sql_server_s3[0].arn
 }
 
-resource "aws_iam_policy" "rds-sql-server-s3-policy" {
+resource "aws_iam_policy" "sql_server_s3" {
   count       = local.create_sql_server_s3_policy ? 1 : 0
-  name        = var.rds_sql_server_s3_policy_name
+  name        = var.sql_server_s3_policy_name
   description = "Permissions for RDS SQL Server S3 backup/restore and point-in-time recovery"
-  policy      = data.aws_iam_policy_document.role-policy-doc.json
+  policy      = data.aws_iam_policy_document.sql_server_s3_permissions.json
 }
 
-data "aws_iam_policy_document" "role-policy-doc" {
+data "aws_iam_policy_document" "sql_server_s3_permissions" {
   statement {
     effect    = "Allow"
     resources = [aws_kms_key.cmk.arn]

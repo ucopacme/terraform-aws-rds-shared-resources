@@ -22,13 +22,13 @@ variable "sql_server_s3_backup_bucket_name" {
   default     = ""
 }
 
-variable "rds_sql_server_s3_role_name" {
+variable "sql_server_s3_role_name" {
   type        = string
   description = "Name of IAM role used for SQL Server native backups and PITR with S3"
   default     = "rds-sql-server-s3-role"
 }
 
-variable "rds_sql_server_s3_policy_name" {
+variable "sql_server_s3_policy_name" {
   type        = string
   description = "(Optional) name of IAM policy defining permissions for RDS SQL Server S3 role"
   default     = null
