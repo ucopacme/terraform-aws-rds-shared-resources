@@ -19,7 +19,7 @@ variable "cmk_allowed_aws_account_ids" {
 variable "sql_server_s3_backup_bucket_name" {
   type        = string
   description = "S3 bucket name for SQL Server native backups and transaction logs for point-in-time recovery"
-  default     = null
+  default     = ""
 }
 
 variable "rds_sql_server_s3_role_name" {
