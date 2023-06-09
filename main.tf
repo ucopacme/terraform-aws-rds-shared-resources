@@ -133,10 +133,10 @@ data "aws_iam_policy_document" "sql_server_s3_backup_bucket_policy" {
 }
 
 resource "aws_iam_role" "rds-sql-server-s3-role" {
-  count               = local.create_sql_server_s3_backup_bucket ? 1 : 0
-  name                = var.rds_sql_server_s3_role_name
-  description         = "Role for RDS SQL Server S3 backup/restore and point-in-time recovery"
-  assume_role_policy  = data.aws_iam_policy_document.role-trust-policy.json
+  count              = local.create_sql_server_s3_backup_bucket ? 1 : 0
+  name               = var.rds_sql_server_s3_role_name
+  description        = "Role for RDS SQL Server S3 backup/restore and point-in-time recovery"
+  assume_role_policy = data.aws_iam_policy_document.role-trust-policy.json
 }
 
 data "aws_iam_policy_document" "role-trust-policy" {
