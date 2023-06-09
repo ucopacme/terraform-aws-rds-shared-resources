@@ -1,7 +1,7 @@
 variable "cmk_alias" {
   type        = string
   description = "KMS alias to assign to CMK"
-  default     = "ucop/rds"
+  default     = "alias/ucop/rds"
 }
 
 variable "cmk_multi_region" {

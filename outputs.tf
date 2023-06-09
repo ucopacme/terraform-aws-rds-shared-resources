@@ -1,5 +1,5 @@
 output "rds-sql-server-s3-role_arn" {
-  value       = aws_iam_role.rds-sql-server-s3-role.*.arn
+  value       = aws_iam_role.rds-sql-server-s3-role[0].arn
   description = "ARN of IAM role used for SQL Server native backups and PITR with S3"
 }
 

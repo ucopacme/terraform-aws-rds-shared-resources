@@ -159,8 +159,8 @@ data "aws_iam_policy_document" "role-trust-policy" {
 
 resource "aws_iam_role_policy_attachment" "rds-sql-server-s3-policy-attach" {
   count      = local.create_sql_server_s3_backup_bucket ? 1 : 0
-  role       = aws_iam_role.rds-sql-server-s3-role.*.name
-  policy_arn = aws_iam_policy.rds-sql-server-s3-policy.*.arn
+  role       = aws_iam_role.rds-sql-server-s3-role[0].name
+  policy_arn = aws_iam_policy.rds-sql-server-s3-policy[0].arn
 }
 
 resource "aws_iam_policy" "rds-sql-server-s3-policy" {
