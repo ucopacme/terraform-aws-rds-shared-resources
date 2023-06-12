@@ -13,3 +13,8 @@ output "cmk_key_id" {
   description = "KMS key ID of CMK created for RDS storage encryption"
 }
 
+output "cmk_key_arn" {
+  value       = aws_kms_key.cmk.key_arn
+  description = "KMS key ARN of CMK created for RDS storage encryption"
+}
+
