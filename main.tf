@@ -137,6 +137,7 @@ resource "aws_iam_role" "sql_server_s3" {
   name               = var.sql_server_s3_role_name
   description        = "Role for RDS SQL Server S3 backup/restore and point-in-time recovery"
   assume_role_policy = data.aws_iam_policy_document.sql_server_s3_trust.json
+  tags               = var.tags
 }
 
 data "aws_iam_policy_document" "sql_server_s3_trust" {
