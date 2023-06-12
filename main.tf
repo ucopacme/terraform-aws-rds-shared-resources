@@ -174,7 +174,7 @@ resource "aws_iam_policy" "sql_server_s3" {
 data "aws_iam_policy_document" "sql_server_s3_permissions" {
   statement {
     effect    = "Allow"
-    resources = [aws_kms_key.cmk.arn]
+    resources = concat([aws_kms_key.cmk.arn], var.kms_key_arns)
 
     actions = [
       "kms:DescribeKey",

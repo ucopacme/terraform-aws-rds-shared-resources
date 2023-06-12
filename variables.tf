@@ -34,6 +34,12 @@ variable "sql_server_s3_policy_name" {
   default     = null
 }
 
+variable "kms_key_arns" {
+  type        = list(string)
+  description = "(Optional) list of other KMS key ARNs that the IAM role should be allowed to access"
+  default     = []
+}
+
 variable "tags" {
   type        = map(string)
   description = "A map of tags to add to all resources"
