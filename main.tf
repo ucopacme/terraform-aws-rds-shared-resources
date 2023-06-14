@@ -108,6 +108,7 @@ data "aws_iam_policy_document" "sql_server_s3_backup_bucket_policy" {
       identifiers = ["backups.rds.amazonaws.com"]
     }
   }
+
   statement {
     sid    = "AllowSSLRequestsOnly"
     effect = "Deny"
@@ -123,6 +124,34 @@ data "aws_iam_policy_document" "sql_server_s3_backup_bucket_policy" {
       test     = "Bool"
       variable = "aws:SecureTransport"
       values   = ["false"]
+    }
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+  }
+
+  statement {
+    sid    = "EnforceBucketPolicyViaCode"
+    effect = "Deny"
+
+    resources = [
+      "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}",
+    ]
+
+    actions = [
+      "s3:DeleteBucketPolicy",
+      "s3:PutBucketPolicy",
+    ]
+
+    condition {
+      test     = "ArnLike"
+      variable = "aws:PrincipalARN"
+
+      values = [
+        "arn:aws:iam::*:role/aws-reserved/sso.amazonaws.com/us-west-2/AWSReservedSSO_rw_*",
+      ]
     }
 
     principals {
