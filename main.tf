@@ -215,7 +215,10 @@ data "aws_iam_policy_document" "sql_server_s3_permissions" {
 
   statement {
     effect    = "Allow"
-    resources = ["arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}"]
+    resources = [
+      "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}",
+      "arn:aws:s3:::rwd-rclone-953452961393-prod"
+    ]
 
     actions = [
       "s3:ListBucket",
@@ -225,7 +228,10 @@ data "aws_iam_policy_document" "sql_server_s3_permissions" {
 
   statement {
     effect    = "Allow"
-    resources = ["arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}/*"]
+    resources = [
+      "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}/*",
+      "arn:aws:s3:::rwd-rclone-953452961393-prod/*"
+    ]
 
     actions = [
       "s3:GetObject",
