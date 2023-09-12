@@ -173,7 +173,7 @@ data "aws_iam_policy_document" "sql_server_s3_backup_bucket_policy" {
   }
 }
 
-# kk https://aws.amazon.com/blogs/database/achieve-database-level-point-in-time-recovery-on-amazon-rds-for-sql-server-using-access-to-transaction-log-backups-feature
+# https://aws.amazon.com/blogs/database/achieve-database-level-point-in-time-recovery-on-amazon-rds-for-sql-server-using-access-to-transaction-log-backups-feature
 data "aws_iam_policy_document" "sql_server_s3_audit_logs_bucket_policy" {
   statement {
     sid       = "Only allow writes to my bucket with bucket owner full control"
@@ -195,7 +195,7 @@ data "aws_iam_policy_document" "sql_server_s3_audit_logs_bucket_policy" {
 
     principals {
       type        = "Service"
-      identifiers = ["backups.rds.amazonaws.com"]
+      identifiers = ["rds.amazonaws.com"]
     }
   }
 
