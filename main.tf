@@ -128,6 +128,8 @@ data "aws_iam_policy_document" "sql_server_s3_backup_bucket_policy" {
     resources = [
       "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}",
       "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}/*",
+      "arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}",
+      "arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}/*",
     ]
 
     actions = ["s3:*"]
@@ -150,6 +152,7 @@ data "aws_iam_policy_document" "sql_server_s3_backup_bucket_policy" {
 
     resources = [
       "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}",
+      "arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}"
     ]
 
     actions = [
@@ -229,12 +232,14 @@ data "aws_iam_policy_document" "sql_server_s3_permissions" {
     effect    = "Allow"
     resources = [
       "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}",
+      "arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}",
       "arn:aws:s3:::rwd-rclone-953452961393-prod"
     ]
 
     actions = [
       "s3:ListBucket",
       "s3:GetBucketLocation",
+      "s3:GetBucketACL"
     ]
   }
 
@@ -242,6 +247,7 @@ data "aws_iam_policy_document" "sql_server_s3_permissions" {
     effect    = "Allow"
     resources = [
       "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}/*",
+      "arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}/*",
       "arn:aws:s3:::rwd-rclone-953452961393-prod/*"
     ]
 
@@ -251,6 +257,14 @@ data "aws_iam_policy_document" "sql_server_s3_permissions" {
       "s3:GetObjectAttributes",
       "s3:ListMultipartUploadParts",
       "s3:AbortMultipartUpload",
+    ]
+  }
+  statement {
+    effect    = "Allow"
+    resources = ["*"]
+
+    actions = [
+      "s3:ListAllMyBuckets"
     ]
   }
 }
