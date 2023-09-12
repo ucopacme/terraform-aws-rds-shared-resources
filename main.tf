@@ -82,6 +82,18 @@ module "sql_server_s3_backup" {
   tags             = var.tags
 }
 
+module "sql_server_s3_audit_logs" {
+  count            = local.create_sql_server_s3_audit_logs_bucket ? 1 : 0
+  source           = "git::https://git@github.com/ucopacme/terraform-aws-s3-bucket.git"
+  bucket           = var.sql_server_s3_audit_logs_bucket_name
+  enabled          = true
+  object_ownership = "BucketOwnerPreferred"
+  policy_enabled   = true
+  policy           = data.aws_iam_policy_document.sql_server_s3_backup_bucket_policy.json
+  sse_algorithm    = "AES256"
+  tags             = var.tags
+}
+
 # Policy below is from:
 # https://aws.amazon.com/blogs/database/achieve-database-level-point-in-time-recovery-on-amazon-rds-for-sql-server-using-access-to-transaction-log-backups-feature
 data "aws_iam_policy_document" "sql_server_s3_backup_bucket_policy" {
