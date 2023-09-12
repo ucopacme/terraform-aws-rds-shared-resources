@@ -21,6 +21,11 @@ variable "sql_server_s3_backup_bucket_name" {
   description = "S3 bucket name for SQL Server native backups and transaction logs for point-in-time recovery"
   default     = ""
 }
+variable "sql_server_s3_audit_logs_bucket_name" {
+  type        = string
+  description = "S3 bucket name for SQL Server audit logs"
+  default     = ""
+}
 
 variable "sql_server_s3_role_name" {
   type        = string
