@@ -174,7 +174,7 @@ data "aws_iam_policy_document" "sql_server_s3_backup_bucket_policy" {
 }
 
 # kk https://aws.amazon.com/blogs/database/achieve-database-level-point-in-time-recovery-on-amazon-rds-for-sql-server-using-access-to-transaction-log-backups-feature
-data "aws_iam_policy_document" "sql_server_s3_audit_lots_bucket_policy" {
+data "aws_iam_policy_document" "sql_server_s3_audit_logs_bucket_policy" {
   statement {
     sid       = "Only allow writes to my bucket with bucket owner full control"
     effect    = "Allow"
