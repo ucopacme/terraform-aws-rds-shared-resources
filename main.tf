@@ -89,7 +89,7 @@ module "sql_server_s3_audit_logs" {
   enabled          = true
   object_ownership = "BucketOwnerPreferred"
   policy_enabled   = true
-  policy           = data.aws_iam_policy_document.sql_server_s3_backup_bucket_policy.json
+  policy           = data.aws_iam_policy_document.sql_server_s3_audit_logs_bucket_policy.json
   sse_algorithm    = "AES256"
   tags             = var.tags
 }
@@ -127,7 +127,83 @@ data "aws_iam_policy_document" "sql_server_s3_backup_bucket_policy" {
 
     resources = [
       "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}",
-      "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}/*",
+      "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}/*"
+    ]
+
+    actions = ["s3:*"]
+
+    condition {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+      values   = ["false"]
+    }
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+  }
+
+  statement {
+    sid    = "EnforceBucketPolicyViaCode"
+    effect = "Deny"
+
+    resources = [
+      "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}"
+    ]
+
+    actions = [
+      "s3:DeleteBucketPolicy",
+      "s3:PutBucketPolicy",
+    ]
+
+    condition {
+      test     = "ArnLike"
+      variable = "aws:PrincipalARN"
+
+      values = [
+        "arn:aws:iam::*:role/aws-reserved/sso.amazonaws.com/us-west-2/AWSReservedSSO_rw_*",
+      ]
+    }
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+  }
+}
+
+# kk https://aws.amazon.com/blogs/database/achieve-database-level-point-in-time-recovery-on-amazon-rds-for-sql-server-using-access-to-transaction-log-backups-feature
+data "aws_iam_policy_document" "sql_server_s3_audi_lots_bucket_policy" {
+  statement {
+    sid       = "Only allow writes to my bucket with bucket owner full control"
+    effect    = "Allow"
+    resources = ["arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}/*"]
+    actions   = ["s3:PutObject"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:sourceAccount"
+      values   = [data.aws_caller_identity.this.account_id]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-acl"
+      values   = ["bucket-owner-full-control"]
+    }
+
+    principals {
+      type        = "Service"
+      identifiers = ["backups.rds.amazonaws.com"]
+    }
+  }
+
+  statement {
+    sid    = "AllowSSLRequestsOnly"
+    effect = "Deny"
+
+    resources = [
       "arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}",
       "arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}/*"
     ]
@@ -151,7 +227,6 @@ data "aws_iam_policy_document" "sql_server_s3_backup_bucket_policy" {
     effect = "Deny"
 
     resources = [
-      "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}",
       "arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}"
     ]
 
