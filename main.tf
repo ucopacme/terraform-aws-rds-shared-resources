@@ -129,7 +129,7 @@ data "aws_iam_policy_document" "sql_server_s3_backup_bucket_policy" {
       "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}",
       "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}/*",
       "arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}",
-      "arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}/*",
+      "arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}/*"
     ]
 
     actions = ["s3:*"]
