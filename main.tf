@@ -308,7 +308,8 @@ data "aws_iam_policy_document" "sql_server_s3_permissions" {
     resources = [
       "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}",
       "arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}",
-      "arn:aws:s3:::rwd-rclone-953452961393-prod"
+      "arn:aws:s3:::rwd-rclone-953452961393-prod",
+      "arn:aws:s3:::rwd-sagitec-directbkup-953452961393-prod"
     ]
 
     actions = [
@@ -323,7 +324,8 @@ data "aws_iam_policy_document" "sql_server_s3_permissions" {
     resources = [
       "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}/*",
       "arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}/*",
-      "arn:aws:s3:::rwd-rclone-953452961393-prod/*"
+      "arn:aws:s3:::rwd-rclone-953452961393-prod/*",
+      "arn:aws:s3:::rwd-sagitec-directbkup-953452961393-prod/*"
     ]
 
     actions = [
