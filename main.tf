@@ -87,7 +87,7 @@ module "sql_server_s3_audit_logs" {
   source           = "git::https://git@github.com/ucopacme/terraform-aws-s3-bucket.git"
   bucket           = var.sql_server_s3_audit_logs_bucket_name
   enabled          = true
-  object_ownership = "BucketOwnerPreferred"
+  object_ownership = "BucketOwnerEnforced"
   policy_enabled   = true
   policy           = data.aws_iam_policy_document.sql_server_s3_audit_logs_bucket_policy.json
   sse_algorithm    = "AES256"
@@ -173,32 +173,7 @@ data "aws_iam_policy_document" "sql_server_s3_backup_bucket_policy" {
   }
 }
 
-# https://aws.amazon.com/blogs/database/achieve-database-level-point-in-time-recovery-on-amazon-rds-for-sql-server-using-access-to-transaction-log-backups-feature
 data "aws_iam_policy_document" "sql_server_s3_audit_logs_bucket_policy" {
-  statement {
-    sid       = "Only allow writes to my bucket with bucket owner full control"
-    effect    = "Allow"
-    resources = ["arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}/*"]
-    actions   = ["s3:PutObject"]
-
-    condition {
-      test     = "StringEquals"
-      variable = "aws:sourceAccount"
-      values   = [data.aws_caller_identity.this.account_id]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "s3:x-amz-acl"
-      values   = ["bucket-owner-full-control"]
-    }
-
-    principals {
-      type        = "Service"
-      identifiers = ["rds.amazonaws.com"]
-    }
-  }
-
   statement {
     sid    = "AllowSSLRequestsOnly"
     effect = "Deny"
