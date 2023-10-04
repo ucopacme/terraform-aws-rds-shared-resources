@@ -75,7 +75,7 @@ module "sql_server_s3_backup" {
   source           = "git::https://git@github.com/ucopacme/terraform-aws-s3-bucket.git"
   bucket           = var.sql_server_s3_backup_bucket_name
   enabled          = true
-  object_ownership = "BucketOwnerPreferred"
+  object_ownership = "BucketOwnerEnforced"
   policy_enabled   = true
   policy           = data.aws_iam_policy_document.sql_server_s3_backup_bucket_policy.json
   sse_algorithm    = "AES256"
