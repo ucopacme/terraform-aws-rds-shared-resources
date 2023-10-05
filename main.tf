@@ -353,6 +353,7 @@ resource "aws_iam_policy" "sql_server_s3" {
 
 data "aws_iam_policy_document" "sql_server_s3_permissions_base" {
   statement {
+    sid       = "AllowKMSActions"
     effect    = "Allow"
     resources = concat([aws_kms_key.cmk.arn], var.kms_key_arns)
 
@@ -365,6 +366,7 @@ data "aws_iam_policy_document" "sql_server_s3_permissions_base" {
   }
 
   statement {
+    sid       = "AllowBucketActions"
     effect    = "Allow"
     resources = [
       "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}",
@@ -379,6 +381,7 @@ data "aws_iam_policy_document" "sql_server_s3_permissions_base" {
   }
 
   statement {
+    sid       = "AllowBucketObjectActions"
     effect    = "Allow"
     resources = [
       "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}/*",
@@ -405,7 +408,7 @@ data "aws_iam_policy_document" "sql_server_s3_permissions_base" {
 
 data "aws_iam_policy_document" "sql_server_s3_permissions_read_extra_s3_buckets" {
   statement {
-    sid       = "AllowBucketObjectActions"
+    sid       = "AllowExtraBucketObjectActions"
     effect    = "Allow"
     resources = [for bucket_name in var.read_s3_bucket_names : "arn:aws:s3:::${bucket_name}/*"]
     actions   = [
@@ -416,7 +419,7 @@ data "aws_iam_policy_document" "sql_server_s3_permissions_read_extra_s3_buckets"
   }
 
   statement {
-    sid       = "AllowBucketActions"
+    sid       = "AllowExtraBucketActions"
     effect    = "Allow"
     resources = [for bucket_name in var.read_s3_bucket_names : "arn:aws:s3:::${bucket_name}"]
     actions = [
