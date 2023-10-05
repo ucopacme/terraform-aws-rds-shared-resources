@@ -193,7 +193,7 @@ data "aws_iam_policy_document" "sql_server_s3_backup_bucket_cross_account" {
   statement {
     sid       = "AllowCrossAccountBucketActions"
     effect    = "Allow"
-    resources = ["arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}/*"]
+    resources = ["arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}"]
     actions = [
       "s3:GetBucketACL",
       "s3:GetBucketLocation",
@@ -289,7 +289,7 @@ data "aws_iam_policy_document" "sql_server_s3_audit_logs_bucket_cross_account" {
   statement {
     sid       = "AllowCrossAccountBucketActions"
     effect    = "Allow"
-    resources = ["arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}/*"]
+    resources = ["arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}"]
     actions = [
       "s3:GetBucketACL",
       "s3:GetBucketLocation",
