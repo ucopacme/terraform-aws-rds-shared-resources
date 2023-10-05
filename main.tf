@@ -209,7 +209,7 @@ data "aws_iam_policy_document" "sql_server_s3_backup_bucket_cross_account" {
 
 data "aws_iam_policy_document" "sql_server_s3_backup_bucket_policy" {
   source_policy_documents = length(var.backup_bucket_allowed_aws_account_ids) == 0 ? [
-    data.aws_iam_policy_document.sql_server_s3_backup_bucket_cross_account.json
+    data.aws_iam_policy_document.sql_server_s3_backup_bucket_base.json
   ] : [
     data.aws_iam_policy_document.sql_server_s3_backup_bucket_base.json,
     data.aws_iam_policy_document.sql_server_s3_backup_bucket_cross_account.json
@@ -305,7 +305,7 @@ data "aws_iam_policy_document" "sql_server_s3_audit_logs_bucket_cross_account" {
 
 data "aws_iam_policy_document" "sql_server_s3_audit_logs_bucket_policy" {
   source_policy_documents = length(var.audit_logs_bucket_allowed_aws_account_ids) == 0 ? [
-    data.aws_iam_policy_document.sql_server_s3_audit_logs_bucket_cross_account.json
+    data.aws_iam_policy_document.sql_server_s3_audit_logs_bucket_base.json
   ] : [
     data.aws_iam_policy_document.sql_server_s3_audit_logs_bucket_base.json,
     data.aws_iam_policy_document.sql_server_s3_audit_logs_bucket_cross_account.json
