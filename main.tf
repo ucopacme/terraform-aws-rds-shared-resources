@@ -96,7 +96,7 @@ module "sql_server_s3_audit_logs" {
 
 # Policy below is from:
 # https://aws.amazon.com/blogs/database/achieve-database-level-point-in-time-recovery-on-amazon-rds-for-sql-server-using-access-to-transaction-log-backups-feature
-data "aws_iam_policy_document" "sql_server_s3_backup_bucket_policy" {
+data "aws_iam_policy_document" "sql_server_s3_backup_bucket_base" {
   statement {
     sid       = "Only allow writes to my bucket with bucket owner full control"
     effect    = "Allow"
@@ -173,7 +173,50 @@ data "aws_iam_policy_document" "sql_server_s3_backup_bucket_policy" {
   }
 }
 
-data "aws_iam_policy_document" "sql_server_s3_audit_logs_bucket_policy" {
+data "aws_iam_policy_document" "sql_server_s3_backup_bucket_cross_account" {
+  statement {
+    sid       = "AllowCrossAccountObjectActions"
+    effect    = "Allow"
+    resources = ["arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}/*"]
+    actions   = [
+      "s3:GetObject",
+      "s3:GetObjectAttributes",
+      "s3:ListMultipartUploadParts",
+    ]
+
+    principals {
+      type        = "AWS"
+      identifiers = [for account_id in var.backup_bucket_allowed_aws_account_ids : "arn:aws:iam::${account_id}:root"]
+    }
+  }
+
+  statement {
+    sid       = "AllowCrossAccountBucketActions"
+    effect    = "Allow"
+    resources = ["arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}/*"]
+    actions = [
+      "s3:GetBucketACL",
+      "s3:GetBucketLocation",
+      "s3:ListBucket",
+    ]
+
+    principals {
+      type        = "AWS"
+      identifiers = [for account_id in var.backup_bucket_allowed_aws_account_ids : "arn:aws:iam::${account_id}:root"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "sql_server_s3_backup_bucket_policy" {
+  source_policy_documents = length(var.backup_bucket_allowed_aws_account_ids) == 0 ? [
+    data.aws_iam_policy_document.sql_server_s3_backup_bucket_cross_account.json
+  ] : [
+    data.aws_iam_policy_document.sql_server_s3_backup_bucket_base.json,
+    data.aws_iam_policy_document.sql_server_s3_backup_bucket_cross_account.json
+  ]
+}
+
+data "aws_iam_policy_document" "sql_server_s3_audit_logs_bucket_base" {
   statement {
     sid    = "AllowSSLRequestsOnly"
     effect = "Deny"
@@ -226,6 +269,49 @@ data "aws_iam_policy_document" "sql_server_s3_audit_logs_bucket_policy" {
   }
 }
 
+data "aws_iam_policy_document" "sql_server_s3_audit_logs_bucket_cross_account" {
+  statement {
+    sid       = "AllowCrossAccountObjectActions"
+    effect    = "Allow"
+    resources = ["arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}/*"]
+    actions   = [
+      "s3:GetObject",
+      "s3:GetObjectAttributes",
+      "s3:ListMultipartUploadParts",
+    ]
+
+    principals {
+      type        = "AWS"
+      identifiers = [for account_id in var.audit_logs_bucket_allowed_aws_account_ids : "arn:aws:iam::${account_id}:root"]
+    }
+  }
+
+  statement {
+    sid       = "AllowCrossAccountBucketActions"
+    effect    = "Allow"
+    resources = ["arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}/*"]
+    actions = [
+      "s3:GetBucketACL",
+      "s3:GetBucketLocation",
+      "s3:ListBucket",
+    ]
+
+    principals {
+      type        = "AWS"
+      identifiers = [for account_id in var.audit_logs_bucket_allowed_aws_account_ids : "arn:aws:iam::${account_id}:root"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "sql_server_s3_audit_logs_bucket_policy" {
+  source_policy_documents = length(var.audit_logs_bucket_allowed_aws_account_ids) == 0 ? [
+    data.aws_iam_policy_document.sql_server_s3_audit_logs_bucket_cross_account.json
+  ] : [
+    data.aws_iam_policy_document.sql_server_s3_audit_logs_bucket_base.json,
+    data.aws_iam_policy_document.sql_server_s3_audit_logs_bucket_cross_account.json
+  ]
+}
+
 resource "aws_iam_role" "sql_server_s3" {
   count              = local.create_sql_server_s3_role ? 1 : 0
   name               = var.sql_server_s3_role_name
@@ -265,7 +351,7 @@ resource "aws_iam_policy" "sql_server_s3" {
   policy      = data.aws_iam_policy_document.sql_server_s3_permissions.json
 }
 
-data "aws_iam_policy_document" "sql_server_s3_permissions" {
+data "aws_iam_policy_document" "sql_server_s3_permissions_base" {
   statement {
     effect    = "Allow"
     resources = concat([aws_kms_key.cmk.arn], var.kms_key_arns)
@@ -283,8 +369,6 @@ data "aws_iam_policy_document" "sql_server_s3_permissions" {
     resources = [
       "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}",
       "arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}",
-      "arn:aws:s3:::rwd-rclone-953452961393-prod",
-      "arn:aws:s3:::rwd-sagitec-directbkup-953452961393-prod"
     ]
 
     actions = [
@@ -299,8 +383,6 @@ data "aws_iam_policy_document" "sql_server_s3_permissions" {
     resources = [
       "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}/*",
       "arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}/*",
-      "arn:aws:s3:::rwd-rclone-953452961393-prod/*",
-      "arn:aws:s3:::rwd-sagitec-directbkup-953452961393-prod/*"
     ]
 
     actions = [
@@ -319,5 +401,38 @@ data "aws_iam_policy_document" "sql_server_s3_permissions" {
       "s3:ListAllMyBuckets"
     ]
   }
+}
+
+data "aws_iam_policy_document" "sql_server_s3_permissions_read_extra_s3_buckets" {
+  statement {
+    sid       = "AllowBucketObjectActions"
+    effect    = "Allow"
+    resources = [for bucket_name in var.read_s3_bucket_names : "arn:aws:s3:::${bucket_name}/*"]
+    actions   = [
+      "s3:GetObject",
+      "s3:GetObjectAttributes",
+      "s3:ListMultipartUploadParts",
+    ]
+  }
+
+  statement {
+    sid       = "AllowBucketActions"
+    effect    = "Allow"
+    resources = [for bucket_name in var.read_s3_bucket_names : "arn:aws:s3:::${bucket_name}"]
+    actions = [
+      "s3:GetBucketACL",
+      "s3:GetBucketLocation",
+      "s3:ListBucket",
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "sql_server_s3_permissions" {
+  source_policy_documents = length(var.read_s3_bucket_names) == 0 ? [
+    data.aws_iam_policy_document.sql_server_s3_permissions_base.json
+  ] : [
+    data.aws_iam_policy_document.sql_server_s3_permissions_base.json,
+    data.aws_iam_policy_document.sql_server_s3_permissions_read_extra_s3_buckets.json
+  ]
 }
 
