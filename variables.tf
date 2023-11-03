@@ -25,7 +25,7 @@ variable "sql_server_s3_backup_bucket_name" {
 variable "sql_server_s3_backup_bucket_versioning" {
   type        = string
   description = "versioning on SQL Server backup bucket (Enabled, Suspended, or Disabled)"
-  default     = false
+  default     = "Disabled"
 }
 
 variable "sql_server_s3_audit_logs_bucket_name" {
@@ -37,7 +37,7 @@ variable "sql_server_s3_audit_logs_bucket_name" {
 variable "sql_server_s3_audit_logs_bucket_versioning" {
   type        = string
   description = "versioning on SQL Server audit logs bucket (Enabled, Suspended, or Disabled)"
-  default     = false
+  default     = "Disabled"
 }
 
 variable "backup_bucket_allowed_aws_account_ids" {
