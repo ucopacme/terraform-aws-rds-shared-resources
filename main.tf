@@ -71,27 +71,29 @@ data "aws_iam_policy_document" "cmk" {
 }
 
 module "sql_server_s3_backup" {
-  count            = local.create_sql_server_s3_backup_bucket ? 1 : 0
-  source           = "git::https://git@github.com/ucopacme/terraform-aws-s3-bucket.git"
-  bucket           = var.sql_server_s3_backup_bucket_name
-  enabled          = true
-  object_ownership = "BucketOwnerEnforced"
-  policy_enabled   = true
-  policy           = data.aws_iam_policy_document.sql_server_s3_backup_bucket_policy.json
-  sse_algorithm    = "AES256"
-  tags             = var.tags
+  count              = local.create_sql_server_s3_backup_bucket ? 1 : 0
+  source             = "git::https://git@github.com/ucopacme/terraform-aws-s3-bucket.git"
+  bucket             = var.sql_server_s3_backup_bucket_name
+  enabled            = true
+  object_ownership   = "BucketOwnerEnforced"
+  policy_enabled     = true
+  policy             = data.aws_iam_policy_document.sql_server_s3_backup_bucket_policy.json
+  sse_algorithm      = "AES256"
+  versioning_enabled = var.sql_server_s3_backup_bucket_versioning_enabled
+  tags               = var.tags
 }
 
 module "sql_server_s3_audit_logs" {
-  count            = local.create_sql_server_s3_audit_logs_bucket ? 1 : 0
-  source           = "git::https://git@github.com/ucopacme/terraform-aws-s3-bucket.git"
-  bucket           = var.sql_server_s3_audit_logs_bucket_name
-  enabled          = true
-  object_ownership = "BucketOwnerEnforced"
-  policy_enabled   = true
-  policy           = data.aws_iam_policy_document.sql_server_s3_audit_logs_bucket_policy.json
-  sse_algorithm    = "AES256"
-  tags             = var.tags
+  count              = local.create_sql_server_s3_audit_logs_bucket ? 1 : 0
+  source             = "git::https://git@github.com/ucopacme/terraform-aws-s3-bucket.git"
+  bucket             = var.sql_server_s3_audit_logs_bucket_name
+  enabled            = true
+  object_ownership   = "BucketOwnerEnforced"
+  policy_enabled     = true
+  policy             = data.aws_iam_policy_document.sql_server_s3_audit_logs_bucket_policy.json
+  sse_algorithm      = "AES256"
+  versioning_enabled = var.sql_server_s3_audit_logs_bucket_versioning_enabled
+  tags               = var.tags
 }
 
 # Policy below is from:
@@ -178,7 +180,7 @@ data "aws_iam_policy_document" "sql_server_s3_backup_bucket_cross_account" {
     sid       = "AllowCrossAccountObjectActions"
     effect    = "Allow"
     resources = ["arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}/*"]
-    actions   = [
+    actions = [
       "s3:GetObject",
       "s3:GetObjectAttributes",
       "s3:ListMultipartUploadParts",
@@ -210,7 +212,7 @@ data "aws_iam_policy_document" "sql_server_s3_backup_bucket_cross_account" {
 data "aws_iam_policy_document" "sql_server_s3_backup_bucket_policy" {
   source_policy_documents = length(var.backup_bucket_allowed_aws_account_ids) == 0 ? [
     data.aws_iam_policy_document.sql_server_s3_backup_bucket_base.json
-  ] : [
+    ] : [
     data.aws_iam_policy_document.sql_server_s3_backup_bucket_base.json,
     data.aws_iam_policy_document.sql_server_s3_backup_bucket_cross_account.json
   ]
@@ -274,7 +276,7 @@ data "aws_iam_policy_document" "sql_server_s3_audit_logs_bucket_cross_account" {
     sid       = "AllowCrossAccountObjectActions"
     effect    = "Allow"
     resources = ["arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}/*"]
-    actions   = [
+    actions = [
       "s3:GetObject",
       "s3:GetObjectAttributes",
       "s3:ListMultipartUploadParts",
@@ -306,7 +308,7 @@ data "aws_iam_policy_document" "sql_server_s3_audit_logs_bucket_cross_account" {
 data "aws_iam_policy_document" "sql_server_s3_audit_logs_bucket_policy" {
   source_policy_documents = length(var.audit_logs_bucket_allowed_aws_account_ids) == 0 ? [
     data.aws_iam_policy_document.sql_server_s3_audit_logs_bucket_base.json
-  ] : [
+    ] : [
     data.aws_iam_policy_document.sql_server_s3_audit_logs_bucket_base.json,
     data.aws_iam_policy_document.sql_server_s3_audit_logs_bucket_cross_account.json
   ]
@@ -366,8 +368,8 @@ data "aws_iam_policy_document" "sql_server_s3_permissions_base" {
   }
 
   statement {
-    sid       = "AllowBucketActions"
-    effect    = "Allow"
+    sid    = "AllowBucketActions"
+    effect = "Allow"
     resources = [
       "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}",
       "arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}",
@@ -381,8 +383,8 @@ data "aws_iam_policy_document" "sql_server_s3_permissions_base" {
   }
 
   statement {
-    sid       = "AllowBucketObjectActions"
-    effect    = "Allow"
+    sid    = "AllowBucketObjectActions"
+    effect = "Allow"
     resources = [
       "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}/*",
       "arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}/*",
@@ -411,7 +413,7 @@ data "aws_iam_policy_document" "sql_server_s3_permissions_read_extra_s3_buckets"
     sid       = "AllowExtraBucketObjectActions"
     effect    = "Allow"
     resources = [for bucket_name in var.read_s3_bucket_names : "arn:aws:s3:::${bucket_name}/*"]
-    actions   = [
+    actions = [
       "s3:GetObject",
       "s3:GetObjectAttributes",
       "s3:ListMultipartUploadParts",
@@ -433,7 +435,7 @@ data "aws_iam_policy_document" "sql_server_s3_permissions_read_extra_s3_buckets"
 data "aws_iam_policy_document" "sql_server_s3_permissions" {
   source_policy_documents = length(var.read_s3_bucket_names) == 0 ? [
     data.aws_iam_policy_document.sql_server_s3_permissions_base.json
-  ] : [
+    ] : [
     data.aws_iam_policy_document.sql_server_s3_permissions_base.json,
     data.aws_iam_policy_document.sql_server_s3_permissions_read_extra_s3_buckets.json
   ]

@@ -22,10 +22,22 @@ variable "sql_server_s3_backup_bucket_name" {
   default     = ""
 }
 
+variable "sql_server_s3_backup_bucket_versioning_enabled" {
+  type        = bool
+  description = "versioning on SQL Server backup bucket"
+  default     = false
+}
+
 variable "sql_server_s3_audit_logs_bucket_name" {
   type        = string
   description = "S3 bucket name for SQL Server audit logs"
   default     = ""
+}
+
+variable "sql_server_s3_audit_logs_bucket_versioning_enabled" {
+  type        = bool
+  description = "versioning on SQL Server audit logs bucket"
+  default     = false
 }
 
 variable "backup_bucket_allowed_aws_account_ids" {
