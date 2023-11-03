@@ -22,9 +22,9 @@ variable "sql_server_s3_backup_bucket_name" {
   default     = ""
 }
 
-variable "sql_server_s3_backup_bucket_versioning_enabled" {
-  type        = bool
-  description = "versioning on SQL Server backup bucket"
+variable "sql_server_s3_backup_bucket_versioning" {
+  type        = string
+  description = "versioning on SQL Server backup bucket (Enabled, Suspended, or Disabled)"
   default     = false
 }
 
@@ -34,9 +34,9 @@ variable "sql_server_s3_audit_logs_bucket_name" {
   default     = ""
 }
 
-variable "sql_server_s3_audit_logs_bucket_versioning_enabled" {
-  type        = bool
-  description = "versioning on SQL Server audit logs bucket"
+variable "sql_server_s3_audit_logs_bucket_versioning" {
+  type        = string
+  description = "versioning on SQL Server audit logs bucket (Enabled, Suspended, or Disabled)"
   default     = false
 }
 

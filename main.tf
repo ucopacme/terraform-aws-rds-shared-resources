@@ -79,7 +79,7 @@ module "sql_server_s3_backup" {
   policy_enabled     = true
   policy             = data.aws_iam_policy_document.sql_server_s3_backup_bucket_policy.json
   sse_algorithm      = "AES256"
-  versioning_enabled = var.sql_server_s3_backup_bucket_versioning_enabled
+  versioning_enabled = var.sql_server_s3_backup_bucket_versioning
   tags               = var.tags
 }
 
@@ -92,7 +92,7 @@ module "sql_server_s3_audit_logs" {
   policy_enabled     = true
   policy             = data.aws_iam_policy_document.sql_server_s3_audit_logs_bucket_policy.json
   sse_algorithm      = "AES256"
-  versioning_enabled = var.sql_server_s3_audit_logs_bucket_versioning_enabled
+  versioning_enabled = var.sql_server_s3_audit_logs_bucket_versioning
   tags               = var.tags
 }
 
