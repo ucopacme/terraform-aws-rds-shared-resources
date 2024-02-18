@@ -370,10 +370,7 @@ data "aws_iam_policy_document" "sql_server_s3_permissions_base" {
   statement {
     sid    = "AllowBucketActions"
     effect = "Allow"
-    resources = [
-      "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}",
-      "arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}",
-    ]
+    resources = local.create_sql_server_s3_audit_logs_bucket ? ["arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}", "arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}"] : ["arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}"]
 
     actions = [
       "s3:ListBucket",
@@ -385,10 +382,7 @@ data "aws_iam_policy_document" "sql_server_s3_permissions_base" {
   statement {
     sid    = "AllowBucketObjectActions"
     effect = "Allow"
-    resources = [
-      "arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}/*",
-      "arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}/*",
-    ]
+    resources = local.create_sql_server_s3_audit_logs_bucket ? ["arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}/*", "arn:aws:s3:::${var.sql_server_s3_audit_logs_bucket_name}/*"] : ["arn:aws:s3:::${var.sql_server_s3_backup_bucket_name}/*"]
 
     actions = [
       "s3:GetObject",
