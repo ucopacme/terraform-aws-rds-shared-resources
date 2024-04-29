@@ -333,7 +333,6 @@ data "aws_iam_policy_document" "sql_server_s3_trust" {
       identifiers = [
         "rds.amazonaws.com",
         "ec2.amazonaws.com",
-        "enhancedmonitoring.amazonaws.com",
         "monitoring.rds.amazonaws.com",
       ]
     }
