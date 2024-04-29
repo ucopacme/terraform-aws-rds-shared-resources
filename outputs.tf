@@ -3,6 +3,11 @@ output "sql_server_s3_role_arn" {
   description = "ARN of IAM role used for SQL Server native backups and PITR with S3"
 }
 
+output "sql_server_s3_backup_bucket_name" {
+  value       = join("",module.sql_server_s3_backup.*.bucket_domain_name
+  description = "Bucket Name"
+}
+
 output "sql_server_s3_backup_bucket_arn" {
   value       = join("", module.sql_server_s3_backup.*.bucket_arn)
   description = "S3 bucket ARN for SQL Server native backups and transaction logs for point-in-time recovery"
