@@ -4,7 +4,7 @@ output "sql_server_s3_role_arn" {
 }
 
 output "sql_server_s3_backup_bucket_name" {
-  value       = join("",module.sql_server_s3_backup.*.bucket_domain_name
+  value       = join("", module.sql_server_s3_backup.*.bucket_domain_name
   description = "Bucket Name"
 }
 
