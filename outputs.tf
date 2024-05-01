@@ -19,11 +19,11 @@ output "sql_server_s3_audit_logs_bucket_arn" {
 }
 
 output "cmk_key_id" {
-  value       = aws_kms_key.cmk[0].key_id
+  value       = var.cmk_enabled ? aws_kms_key.cmk[0].key_id : null
   description = "KMS key ID of CMK created for RDS storage encryption"
 }
 
 output "cmk_key_arn" {
-  value       = aws_kms_key.cmk[0].arn
+  value       = var.cmk_enabled ? aws_kms_key.cmk[0].arn : null
   description = "KMS key ARN of CMK created for RDS storage encryption"
 }
