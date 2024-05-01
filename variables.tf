@@ -1,3 +1,9 @@
+variable "cmk_enabled" {
+  type        = bool
+  description = "Whether to create RDS CMK"
+  default     = true
+}
+
 variable "cmk_alias" {
   type        = string
   description = "KMS alias to assign to CMK"
